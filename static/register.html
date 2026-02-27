@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-i18n="register.title">Create Account - GBabelDocUI</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <script src="/static/js/i18n.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <div class="page-wrapper flex flex-center">
+        <div class="container" style="max-width: 500px; width: 100%;">
+            <div class="glass-card fade-in" style="max-width: 100%;">
+                <div class="card-header text-center">
+                    <h1 class="logo mb-sm">GBabelDocUI</h1>
+                    <p class="card-subtitle" id="subtitle" data-i18n="register.subtitle">Register a new account</p>
+                </div>
+
+                <div class="card-body">
+                    <!-- Registration Disabled Message -->
+                    <div id="disabled-message" class="alert alert-warning" style="display: none;">
+                        <strong data-i18n="register.disabled.title">Registration Disabled</strong><br>
+                        <span data-i18n="register.disabled.message">New user registration is currently disabled. Please
+                            contact an administrator.</span>
+                    </div>
+
+                    <!-- Registration Form -->
+                    <form id="registerForm" style="display: none;">
+                        <div class="form-group">
+                            <label class="form-label" for="username" data-i18n="register.username">Username</label>
+                            <input type="text" id="username" class="form-input" placeholder="Enter username" required
+                                minlength="3">
+                            <span class="form-help" data-i18n="register.username.min">At least 3 characters</span>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" for="password" data-i18n="register.password">Password</label>
+                            <input type="password" id="password" class="form-input" placeholder="Enter password"
+                                required minlength="6">
+                            <span class="form-help" data-i18n="register.password.min">At least 6 characters</span>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" for="passwordConfirm"
+                                data-i18n="register.password.confirm">Confirm Password</label>
+                            <input type="password" id="passwordConfirm" class="form-input"
+                                placeholder="Confirm password" required>
+                        </div>
+
+                        <div id="registerError" class="form-error" style="display: none;"></div>
+
+                        <button type="submit" class="btn btn-primary btn-block btn-lg mt-md"
+                            data-i18n="register.btn.register">
+                            Register
+                        </button>
+                    </form>
+                </div>
+
+                <div class="card-footer text-center">
+                    <p class="text-muted" style="font-size: var(--font-size-sm);">
+                        <a href="/login.html" class="text-primary" data-i18n="register.link.login">Already have an
+                            account? Login</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/js/api.js"></script>
+    <script src="/static/js/auth.js"></script>
+    <script>
+        // Check if already authenticated
+        if (redirectIfAuthenticated()) {
+            // Will redirect, no need to continue
+        } else {
+            // Check if registration is enabled
+            checkRegistrationEnabled();
+        }
+
+        async function checkRegistrationEnabled() {
+            try {
+                const response = await api.checkRegistrationStatus();
+
+                if (response.enabled) {
+                    // Show registration form
+                    document.getElementById('registerForm').style.display = 'block';
+                    document.getElementById('disabled-message').style.display = 'none';
+                } else {
+                    // Show disabled message
+                    document.getElementById('registerForm').style.display = 'none';
+                    document.getElementById('disabled-message').style.display = 'block';
+                }
+            } catch (error) {
+                console.error('Failed to check registration status:', error);
+                // Default to showing disabled message for security
+                document.getElementById('registerForm').style.display = 'none';
+                document.getElementById('disabled-message').style.display = 'block';
+            }
+        }
+
+        // Registration form submission
+        document.getElementById('registerForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const passwordConfirm = document.getElementById('passwordConfirm').value;
+            const errorDiv = document.getElementById('registerError');
+
+            // Validate passwords match
+            if (password !== passwordConfirm) {
+                errorDiv.textContent = i18n.t('register.error.mismatch');
+                errorDiv.style.display = 'block';
+                return;
+            }
+
+            errorDiv.style.display = 'none';
+            showLoading('Creating account...');
+
+            try {
+                const response = await api.registerPublic(username, password);
+
+                if (response.success) {
+                    hideLoading();
+                    showSuccess(i18n.t('register.success'));
+                    setTimeout(() => {
+                        window.location.href = '/upload.html';
+                    }, 1000);
+                }
+            } catch (error) {
+                hideLoading();
+                errorDiv.textContent = error.message;
+                errorDiv.style.display = 'block';
+            }
+        });
+    </script>
+</body>
+
+</html>

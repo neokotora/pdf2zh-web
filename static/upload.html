@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload - GBabelDocUI</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script src="/static/js/i18n.js"></script>
+</head>
+
+<body>
+    <div class="page-wrapper">
+        <!-- Header -->
+        <header class="header">
+            <div class="container">
+                <nav class="nav">
+                    <div class="logo">GBabelDocUI</div>
+                    <ul class="nav-links">
+                        <li><a href="/static/upload.html" class="nav-link active" data-i18n="nav.upload">Upload</a></li>
+                        <li><a href="/static/settings.html" class="nav-link" data-i18n="nav.settings">Settings</a></li>
+                        <li><a href="#" class="nav-link" id="user-info"></a></li>
+                        <li><a href="#" class="nav-link" id="logout-btn" data-i18n="nav.logout">Logout</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="container">
+                <div class="grid grid-2">
+                    <!-- Upload Section (Left Column) -->
+                    <div>
+                        <div class="card">
+                            <div class="card-header">
+                                <h2 class="card-title" data-i18n="upload.title">Upload PDF</h2>
+                                <p class="card-subtitle" data-i18n="upload.subtitle">Upload a file or enter a URL to
+                                    translate</p>
+                            </div>
+
+                            <div class="card-body">
+                                <!-- Upload Zone -->
+                                <div class="upload-zone" id="upload-zone">
+                                    <div class="upload-icon">
+                                        <i class="fas fa-file-pdf" style="font-size: 48px;"></i>
+                                    </div>
+                                    <p class="upload-text" data-i18n="upload.drag">Drag and drop your PDF here</p>
+                                    <p class="upload-hint" data-i18n="upload.browse">or click to browse</p>
+                                    <input type="file" id="file-input" accept=".pdf" style="display: none;">
+                                </div>
+
+                                <div class="text-center mt-md mb-md">
+                                    <span class="text-muted" data-i18n="upload.or">— OR —</span>
+                                </div>
+
+                                <!-- URL Input -->
+                                <div class="form-group">
+                                    <label class="form-label">PDF URL</label>
+                                    <input type="url" class="form-input" id="url-input"
+                                        placeholder="https://example.com/document.pdf">
+                                </div>
+
+                                <!-- Page Selection -->
+                                <div class="form-group">
+                                    <label class="form-label" data-i18n="upload.pages">Pages to Translate</label>
+                                    <select class="form-select" id="page-range-select">
+                                        <option value="all" data-i18n="upload.pages.all">All Pages</option>
+                                        <option value="first" data-i18n="upload.pages.first">First Page Only</option>
+                                        <option value="first5" data-i18n="upload.pages.first5">First 5 Pages</option>
+                                        <option value="custom" data-i18n="upload.pages.custom">Custom Range</option>
+                                    </select>
+                                </div>
+
+                                <div class="form-group" id="custom-pages-group" style="display: none;">
+                                    <label class="form-label">Custom Pages</label>
+                                    <input type="text" class="form-input" id="custom-pages-input"
+                                        placeholder="e.g., 1-5,10,15-20">
+                                    <small class="form-help">Enter page numbers or ranges separated by commas</small>
+                                </div>
+
+                                <!-- Translate Button -->
+                                <button class="btn btn-primary btn-block btn-lg" id="translate-btn" disabled
+                                    data-i18n="upload.btn.translate">
+                                    Translate
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right Column: History, Progress, and Result -->
+                    <div>
+                        <!-- History Section (Scrollable) -->
+                        <div class="card">
+                            <div class="card-header">
+                                <h2 class="card-title" data-i18n="upload.history.title">Translation History</h2>
+                                <p class="card-subtitle" data-i18n="upload.history.subtitle">Your recent translations
+                                </p>
+                            </div>
+                            <div class="card-body">
+                                <div id="history-list" class="history-scrollable">
+                                    <p class="text-center text-muted" data-i18n="upload.history.empty">No translations
+                                        yet</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Progress Card -->
+                        <div class="card mt-lg" id="progress-card" style="display: none;">
+                            <div class="card-header">
+                                <h3 class="card-title" data-i18n="upload.progress.title">Translation Progress</h3>
+                            </div>
+                            <div class="card-body">
+                                <div class="progress-bar mb-md">
+                                    <div class="progress-fill" id="progress-fill" style="width: 0%"></div>
+                                </div>
+                                <p id="progress-text" class="text-center text-muted">Initializing...</p>
+                                <p id="progress-detail" class="text-center"
+                                    style="font-size: 0.875rem; color: var(--text-muted);"></p>
+                            </div>
+                        </div>
+
+                        <!-- Result Card -->
+                        <div class="card mt-lg" id="result-card" style="display: none;">
+                            <div class="card-header">
+                                <h3 class="card-title" data-i18n="upload.result.title">Translation Complete!</h3>
+                            </div>
+                            <div class="card-body">
+                                <div class="flex gap-md">
+                                    <button class="btn btn-success flex-1" id="download-mono-btn" style="display: none;"
+                                        data-i18n="upload.result.mono">
+                                        <i class="fas fa-download"></i>
+                                        <span>Download Translation Only</span>
+                                    </button>
+                                    <button class="btn btn-success flex-1" id="download-dual-btn" style="display: none;"
+                                        data-i18n="upload.result.dual">
+                                        <i class="fas fa-exchange-alt"></i>
+                                        <span>Download Bilingual</span>
+                                    </button>
+                                </div>
+                                <button class="btn btn-secondary btn-block mt-md" id="new-translation-btn"
+                                    data-i18n="upload.result.new">
+                                    Start New Translation
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loading-overlay" style="display: none;">
+        <div class="loading-content">
+            <div class="spinner"></div>
+            <p class="loading-text">Loading...</p>
+        </div>
+    </div>
+
+    <script src="/static/js/auth.js"></script>
+    <script src="/static/js/api.js"></script>
+    <script>
+        let currentFile = null;
+        let currentTaskId = null;
+        let progressEventSource = null;
+        let progressInterval = null; // Fallback polling
+
+        // Page range selection
+        document.getElementById('page-range-select').addEventListener('change', (e) => {
+            const customGroup = document.getElementById('custom-pages-group');
+            customGroup.style.display = e.target.value === 'custom' ? 'block' : 'none';
+        });
+
+        // Upload zone
+        const uploadZone = document.getElementById('upload-zone');
+        const fileInput = document.getElementById('file-input');
+
+        uploadZone.addEventListener('click', () => fileInput.click());
+
+        uploadZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadZone.classList.add('drag-over');
+        });
+
+        uploadZone.addEventListener('dragleave', () => {
+            uploadZone.classList.remove('drag-over');
+        });
+
+        uploadZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadZone.classList.remove('drag-over');
+
+            const files = e.dataTransfer.files;
+            if (files.length > 0 && files[0].type === 'application/pdf') {
+                handleFileSelect(files[0]);
+            } else {
+                showAlert('Please drop a PDF file', 'error');
+            }
+        });
+
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                handleFileSelect(e.target.files[0]);
+            }
+        });
+
+        function handleFileSelect(file) {
+            currentFile = file;
+            document.getElementById('translate-btn').disabled = false;
+            uploadZone.querySelector('.upload-text').textContent = file.name;
+            uploadZone.querySelector('.upload-hint').textContent = `${formatFileSize(file.size)} - Click to change`;
+        }
+
+        // URL input
+        document.getElementById('url-input').addEventListener('input', (e) => {
+            const hasUrl = e.target.value.trim().length > 0;
+            document.getElementById('translate-btn').disabled = !hasUrl && !currentFile;
+            if (hasUrl) {
+                currentFile = null;
+                fileInput.value = '';
+            }
+        });
+
+        // Translate button
+        document.getElementById('translate-btn').addEventListener('click', async () => {
+            const urlInput = document.getElementById('url-input').value.trim();
+            const pageRange = document.getElementById('page-range-select').value;
+            const customPages = document.getElementById('custom-pages-input').value.trim();
+
+            try {
+                showLoading();
+
+                let fileId;
+
+                if (currentFile) {
+                    // Upload file
+                    const uploadResponse = await api.uploadFile(currentFile, (progress) => {
+                        console.log(`Upload progress: ${progress}%`);
+                    });
+                    fileId = uploadResponse.file_id;
+                } else if (urlInput) {
+                    // Use URL
+                    fileId = urlInput;
+                } else {
+                    throw new Error('Please select a file or enter a URL');
+                }
+
+                // Get page selection
+                let pages = null;
+                if (pageRange === 'custom' && customPages) {
+                    pages = customPages;
+                } else if (pageRange === 'first') {
+                    pages = '1';
+                } else if (pageRange === 'first5') {
+                    pages = '1-5';
+                }
+
+                // Start translation - send pages as object
+                const translationSettings = pages ? { pages: pages } : {};
+                const result = await api.startTranslation(fileId, translationSettings);
+                currentTaskId = result.task_id;
+
+                // Show progress card
+                document.getElementById('progress-card').style.display = 'block';
+                document.getElementById('result-card').style.display = 'none';
+
+                // Use SSE for real-time progress (with polling fallback)
+                startProgressSSE();
+
+            } catch (error) {
+                showAlert('Translation failed: ' + error.message, 'error');
+            } finally {
+                hideLoading();
+            }
+        });
+
+        /**
+         * Start SSE-based progress tracking. Falls back to polling if SSE fails.
+         */
+        function startProgressSSE() {
+            // Cleanup any previous connection
+            stopProgressTracking();
+
+            try {
+                progressEventSource = api.streamTranslationProgress(currentTaskId, {
+                    onProgress: (data) => {
+                        updateProgressUI(data.progress || 0, data.message || 'Processing...');
+                    },
+                    onComplete: (data) => {
+                        updateProgressUI(100, data.message || 'Translation completed');
+                        showTranslationResult(data);
+                        progressEventSource = null;
+                    },
+                    onError: (data) => {
+                        showAlert('Translation failed: ' + (data.message || 'Unknown error'), 'error');
+                        document.getElementById('progress-card').style.display = 'none';
+                        progressEventSource = null;
+                    },
+                });
+
+                // Set a timeout to detect SSE connection failure and fallback to polling
+                setTimeout(() => {
+                    if (progressEventSource && progressEventSource.readyState === EventSource.CONNECTING) {
+                        console.warn('SSE connection slow, falling back to polling');
+                        stopProgressTracking();
+                        startProgressPolling();
+                    }
+                }, 5000);
+            } catch (e) {
+                console.warn('SSE not available, falling back to polling', e);
+                startProgressPolling();
+            }
+        }
+
+        /**
+         * Fallback: polling-based progress tracking (every 2s)
+         */
+        function startProgressPolling() {
+            if (progressInterval) clearInterval(progressInterval);
+
+            progressInterval = setInterval(async () => {
+                try {
+                    const response = await api.getTranslationStatus(currentTaskId);
+                    const status = response.task || response;
+
+                    updateProgressUI(status.progress || 0, status.message || status.status || 'Processing...');
+
+                    if (status.status === 'completed') {
+                        clearInterval(progressInterval);
+                        progressInterval = null;
+                        showTranslationResult(status);
+                    } else if (status.status === 'failed') {
+                        clearInterval(progressInterval);
+                        progressInterval = null;
+                        showAlert('Translation failed: ' + (status.message || status.error || 'Unknown error'), 'error');
+                        document.getElementById('progress-card').style.display = 'none';
+                    }
+                } catch (error) {
+                    console.error('Error polling status:', error);
+                    clearInterval(progressInterval);
+                    progressInterval = null;
+                    showAlert('Error checking translation status', 'error');
+                }
+            }, 2000);
+        }
+
+        function stopProgressTracking() {
+            if (progressEventSource) {
+                progressEventSource.close();
+                progressEventSource = null;
+            }
+            if (progressInterval) {
+                clearInterval(progressInterval);
+                progressInterval = null;
+            }
+        }
+
+        function updateProgressUI(progress, message) {
+            const progressFill = document.getElementById('progress-fill');
+            const progressText = document.getElementById('progress-text');
+            progressFill.style.width = progress + '%';
+            progressText.textContent = message;
+        }
+
+        function showTranslationResult(status) {
+            document.getElementById('progress-card').style.display = 'none';
+            document.getElementById('result-card').style.display = 'block';
+
+            // Get output files from status
+            const outputFiles = status.output_files || {};
+            const monoPath = outputFiles.mono || status.mono_path;
+            const dualPath = outputFiles.dual || status.dual_path;
+
+            // Show download buttons based on available files
+            if (monoPath) {
+                const monoBtn = document.getElementById('download-mono-btn');
+                monoBtn.style.display = 'block';
+                monoBtn.onclick = () => downloadFile('mono');
+            }
+
+            if (dualPath) {
+                const dualBtn = document.getElementById('download-dual-btn');
+                dualBtn.style.display = 'block';
+                dualBtn.onclick = () => downloadFile('dual');
+            }
+
+            // Reload history
+            loadHistory();
+        }
+
+        async function downloadFile(fileType, taskId = null) {
+            const downloadTaskId = taskId || currentTaskId;
+            if (!downloadTaskId) {
+                console.error('No task ID for download');
+                return;
+            }
+
+            // Find the button that triggered this download
+            const clickedBtn = (typeof event !== 'undefined' && event && event.currentTarget)
+                ? event.currentTarget : null;
+            const btn = clickedBtn ||
+                (fileType === 'mono' ? document.getElementById('download-mono-btn') :
+                    document.getElementById('download-dual-btn'));
+
+            // Save original button content and disable
+            let originalHTML = '';
+            if (btn) {
+                originalHTML = btn.innerHTML;
+                btn.disabled = true;
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> <span>Downloading...</span>';
+            }
+
+            try {
+                const token = localStorage.getItem('auth_token');
+                const response = await fetch(`/api/translate/download/${downloadTaskId}?file_type=${fileType}`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json().catch(() => ({}));
+                    throw new Error(errorData.detail || `Download failed (${response.status})`);
+                }
+
+                // Get filename from Content-Disposition header or use default
+                const contentDisposition = response.headers.get('Content-Disposition');
+                let filename = `translated_${fileType}.pdf`;
+                if (contentDisposition) {
+                    const match = contentDisposition.match(/filename\*?=(?:UTF-8''|"?)([^";\n]+)"?/i);
+                    if (match) {
+                        filename = decodeURIComponent(match[1]);
+                    }
+                }
+
+                // Read the full response as blob
+                const blob = await response.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = filename;
+                a.style.display = 'none';
+                document.body.appendChild(a);
+                a.click();
+                // Delay cleanup to ensure download starts
+                setTimeout(() => {
+                    document.body.removeChild(a);
+                    window.URL.revokeObjectURL(url);
+                }, 100);
+
+                showAlert(i18n.t('upload.download.success') || 'Download complete!', 'success');
+            } catch (error) {
+                console.error('Download error:', error);
+                showAlert((i18n.t('upload.download.failed') || 'Download failed: ') + error.message, 'error');
+            } finally {
+                if (btn) {
+                    btn.disabled = false;
+                    btn.innerHTML = originalHTML;
+                }
+            }
+        }
+
+        // New translation button
+        document.getElementById('new-translation-btn').addEventListener('click', () => {
+            currentFile = null;
+            currentTaskId = null;
+            stopProgressTracking();
+            fileInput.value = '';
+            document.getElementById('url-input').value = '';
+            document.getElementById('translate-btn').disabled = true;
+            document.getElementById('result-card').style.display = 'none';
+            document.getElementById('download-mono-btn').style.display = 'none';
+            document.getElementById('download-dual-btn').style.display = 'none';
+            uploadZone.querySelector('.upload-text').textContent = i18n.t('upload.drag');
+            uploadZone.querySelector('.upload-hint').textContent = i18n.t('upload.browse');
+        });
+
+        // Load translation history
+        async function loadHistory() {
+            try {
+                const response = await api.getTranslationHistory();
+                const history = response.history || [];
+                const historyList = document.getElementById('history-list');
+
+                if (history.length === 0) {
+                    historyList.innerHTML = `<p class="text-center text-muted">${i18n.t('upload.history.empty')}</p>`;
+                    return;
+                }
+
+                historyList.innerHTML = history.map(item => {
+                    const statusColor = item.status === 'completed' ? 'var(--accent-success)' : item.status === 'failed' ? 'var(--accent-error)' : 'var(--accent-warning)';
+
+                    // Extract original filename by removing UUID prefix
+                    let displayName = item.original_filename || item.filename || 'Untitled';
+
+                    if (displayName.includes('_')) {
+                        const parts = displayName.split('_');
+                        if (parts[0].includes('-') && parts[0].length > 20) {
+                            displayName = parts.slice(1).join('_');
+                        }
+                    }
+
+                    if (displayName.length === 0 || displayName === '_') {
+                        displayName = item.filename || 'Untitled';
+                    }
+
+                    return `
+                    <div class="history-item" style="display: flex; align-items: stretch; background: var(--bg-secondary); border-radius: 8px; margin-bottom: 0.75rem; overflow: hidden; border: 1px solid var(--border-color);">
+                        <!-- Status indicator bar -->
+                        <div class="history-status-bar" style="width: 6px; background: ${statusColor}; flex-shrink: 0;"></div>
+
+                        <!-- Main content -->
+                        <div style="flex: 1; padding: 1rem; display: flex; flex-wrap: wrap; align-items: center; gap: 0.75rem;">
+                            <!-- Filename -->
+                            <div style="flex: 1; min-width: 150px;">
+                                <div style="font-weight: 500; word-break: break-all; font-size: 0.9rem;" title="${item.filename}">${displayName}</div>
+                            </div>
+
+                            <!-- Action buttons -->
+                            <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                                ${item.status === 'completed' && item.mono_path ?
+                            `<button class="btn-icon btn-icon-primary" onclick="downloadFile('mono', '${item.task_id}')" title="${i18n.t('upload.result.mono')}">
+                                <i class="fas fa-download"></i>
+                            </button>` : ''}
+                                ${item.status === 'completed' && item.dual_path ?
+                            `<button class="btn-icon btn-icon-secondary" onclick="downloadFile('dual', '${item.task_id}')" title="${i18n.t('upload.result.dual')}">
+                                <i class="fas fa-exchange-alt"></i>
+                            </button>` : ''}
+                                <button class="btn-icon btn-icon-danger" onclick="deleteHistoryItem('${item.task_id}')" title="${i18n.t('common.delete')}">
+                                    <i class="fas fa-trash-alt"></i>
+                                </button>
+                            </div>
+
+                            <!-- Timestamp -->
+                            <div style="color: var(--text-muted); font-size: 0.8rem; white-space: nowrap;">
+                                ${formatDate(item.created_at)}
+                            </div>
+                        </div>
+                    </div>
+                `;
+                }).join('');
+            } catch (error) {
+                console.error('Error loading history:', error);
+            }
+        }
+
+        async function deleteHistoryItem(taskId) {
+            if (!confirm(i18n.t('upload.history.delete.confirm'))) {
+                return;
+            }
+            try {
+                await api.deleteHistoryItem(taskId);
+                showAlert(i18n.t('upload.history.delete.success'), 'success');
+                await loadHistory();
+            } catch (error) {
+                console.error('Delete error:', error);
+                showAlert(i18n.t('upload.history.delete.failed') + error.message, 'error');
+            }
+        }
+
+        // Initialize
+        async function init() {
+            try {
+                await requireAuth();
+                await updateUserInfo();
+                await loadHistory();
+            } catch (error) {
+                console.error('Initialization error:', error);
+            }
+        }
+
+        init();
+    </script>
+</body>
+
+</html>

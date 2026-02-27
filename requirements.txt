@@ -1,0 +1,16 @@
+babeldoc
+bcrypt
+cryptography>=42.0
+deepl
+fastapi
+httpx
+openai
+peewee
+pydantic
+PyJWT
+requests
+rich
+sse-starlette
+tenacity
+tomlkit
+uvicorn[standard]

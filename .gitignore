@@ -1,0 +1,42 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+*.egg
+dist/
+build/
+*.whl
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# App data
+data/
+*.db
+*.db-wal
+*.db-shm
+
+# Secrets
+.env
+*.pem
+*.key
+
+# Logs
+*.log
+
+# Temp files
+*.tmp
+*.bak

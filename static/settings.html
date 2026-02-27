@@ -1,0 +1,1314 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings - GBabelDocUI</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <script src="/static/js/i18n.js"></script>
+</head>
+
+<body>
+    <div class="page-wrapper">
+        <!-- Header -->
+        <header class="header">
+            <div class="container">
+                <nav class="nav">
+                    <div class="logo">GBabelDocUI</div>
+                    <ul class="nav-links">
+                        <li><a href="/static/upload.html" class="nav-link" data-i18n="nav.upload">Upload</a></li>
+                        <li><a href="/static/settings.html" class="nav-link active"
+                                data-i18n="nav.settings">Settings</a></li>
+                        <li><a href="#" class="nav-link" id="user-info"></a></li>
+                        <li><a href="#" class="nav-link" id="logout-btn" data-i18n="nav.logout">Logout</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="container">
+                <div class="card">
+                    <div class="card-header">
+                        <h1 class="card-title" data-i18n="settings.title">Settings</h1>
+                        <p class="card-subtitle" data-i18n="settings.subtitle">Configure your translation preferences
+                            and account</p>
+                    </div>
+
+                    <!-- Tabs Navigation -->
+                    <div class="tabs-nav">
+                        <button class="tab-button active" data-tab="account"
+                            data-i18n="settings.tab.account">Account</button>
+                        <button class="tab-button" data-tab="basic" data-i18n="settings.tab.basic">Basic
+                            Settings</button>
+                        <button class="tab-button" data-tab="pdf-output" data-i18n="settings.tab.pdf">PDF
+                            Output</button>
+                        <button class="tab-button" data-tab="advanced"
+                            data-i18n="settings.tab.advanced">Advanced</button>
+                        <button class="tab-button" data-tab="rate-limit" data-i18n="settings.tab.rate">Rate
+                            Limiting</button>
+                        <button class="tab-button" data-tab="babeldoc"
+                            data-i18n="settings.tab.babeldoc">BabelDOC</button>
+                        <button class="tab-button" data-tab="user-mgmt" id="user-mgmt-tab" style="display: none;"
+                            data-i18n="settings.tab.users">User
+                            Management</button>
+                    </div>
+
+                    <!-- Tab: Account Settings -->
+                    <div class="tab-content active" id="tab-account">
+                        <h3 data-i18n="settings.account.title">Account Settings</h3>
+
+                        <div class="form-group">
+                            <label class="form-label" data-i18n="settings.account.username">Username</label>
+                            <input type="text" class="form-input" id="current-username" readonly>
+                        </div>
+
+                        <h4 class="mt-lg" data-i18n="settings.account.password.title">Change Password</h4>
+                        <div class="form-group">
+                            <label class="form-label" data-i18n="settings.account.password.current">Current
+                                Password</label>
+                            <input type="password" class="form-input" id="current-password"
+                                data-i18n-placeholder="settings.account.password.placeholder.current"
+                                placeholder="Enter current password">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" data-i18n="settings.account.password.new">New Password</label>
+                            <input type="password" class="form-input" id="new-password"
+                                data-i18n-placeholder="settings.account.password.placeholder.new"
+                                placeholder="Enter new password (min 6 characters)">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" data-i18n="settings.account.password.confirm">Confirm New
+                                Password</label>
+                            <input type="password" class="form-input" id="confirm-password"
+                                data-i18n-placeholder="settings.account.password.placeholder.confirm"
+                                placeholder="Confirm new password">
+                        </div>
+
+                        <button class="btn btn-primary" id="change-password-btn"
+                            data-i18n="settings.account.password.btn">Change Password</button>
+                    </div>
+
+                    <!-- Tab: Basic Settings -->
+                    <div class="tab-content" id="tab-basic">
+                        <h3 data-i18n="settings.basic.service">Translation Service</h3>
+
+                        <div class="form-group">
+                            <label class="form-label" data-i18n="settings.basic.service.label">Service</label>
+                            <select class="form-select" id="service">
+                                <option value="AzureOpenAI">Azure OpenAI</option>
+                                <option value="OpenAI">OpenAI</option>
+                                <option value="GoogleGemini">Google Gemini</option>
+                                <option value="DeepL">DeepL</option>
+                                <option value="DeepLX">DeepLX</option>
+                                <option value="Ollama">Ollama</option>
+                                <option value="Bing">Bing</option>
+                                <option value="Google">Google</option>
+                                <option value="Tencent">Tencent</option>
+                                <option value="SiliconFlowFree">SiliconFlow Free</option>
+                            </select>
+                        </div>
+
+
+                        <!-- OpenAI Settings -->
+                        <div id="openai-settings" class="service-settings" style="display: none;">
+                            <h4 class="mt-md">OpenAI Configuration</h4>
+
+                            <div class="form-group">
+                                <label class="form-label">Model</label>
+                                <input type="text" class="form-input" id="openai-model" placeholder="gpt-4o-mini">
+                                <small class="form-help">OpenAI model to use (e.g., gpt-4, gpt-4o-mini)</small>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">API Key</label>
+                                <input type="password" class="form-input" id="openai-api-key" placeholder="sk-...">
+                                <small class="form-help">Your OpenAI API key (required)</small>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Base URL (Optional)</label>
+                                <input type="text" class="form-input" id="openai-base-url"
+                                    placeholder="https://api.openai.com/v1">
+                                <small class="form-help">Custom endpoint for OpenAI-compatible services</small>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Timeout (seconds)</label>
+                                <input type="number" class="form-input" id="openai-timeout" placeholder="60">
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Temperature</label>
+                                <input type="number" class="form-input" id="openai-temperature" step="0.1" min="0"
+                                    max="2" placeholder="0.7">
+                            </div>
+
+                            <div class="form-group">
+                                <label>
+                                    <input type="checkbox" id="openai-send-temperature">
+                                    Send Temperature Parameter
+                                </label>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Reasoning Effort</label>
+                                <select class="form-select" id="openai-reasoning-effort">
+                                    <option value="">None</option>
+                                    <option value="minimal">Minimal</option>
+                                    <option value="low">Low</option>
+                                    <option value="medium">Medium</option>
+                                    <option value="high">High</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label>
+                                    <input type="checkbox" id="openai-send-reasoning-effort">
+                                    Send Reasoning Effort Parameter
+                                </label>
+                            </div>
+
+                            <div class="form-group">
+                                <label>
+                                    <input type="checkbox" id="openai-enable-json-mode">
+                                    Enable JSON Mode
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Azure OpenAI Settings -->
+                        <div id="azureopenai-settings" class="service-settings" style="display: none;">
+                            <h4 class="mt-md">Azure OpenAI Configuration</h4>
+
+                            <div class="form-group">
+                                <label class="form-label">Model / Deployment Name</label>
+                                <input type="text" class="form-input" id="azure-openai-model" placeholder="gpt-4o-mini">
+                                <small class="form-help">Azure OpenAI deployment name</small>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">API Key</label>
+                                <input type="password" class="form-input" id="azure-openai-api-key"
+                                    placeholder="Your Azure API key">
+                                <small class="form-help">Your Azure OpenAI API key (required)</small>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Base URL / Endpoint</label>
+                                <input type="text" class="form-input" id="azure-openai-base-url"
+                                    placeholder="https://your-resource.openai.azure.com">
+                                <small class="form-help">Your Azure OpenAI endpoint (required)</small>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">API Version</label>
+                                <input type="text" class="form-input" id="azure-openai-api-version"
+                                    placeholder="2024-06-01">
+                                <small class="form-help">Azure OpenAI API version</small>
+                            </div>
+                        </div>
+
+                        <!-- Google Gemini Settings -->
+                        <div id="googlegemini-settings" class="service-settings" style="display: none;">
+                            <h4 class="mt-md">Google Gemini Configuration</h4>
+
+                            <div class="form-group">
+                                <label class="form-label">Model</label>
+                                <input type="text" class="form-input" id="gemini-model" placeholder="gemini-1.5-flash">
+                                <small class="form-help">Gemini model to use</small>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">API Key</label>
+                                <input type="password" class="form-input" id="gemini-api-key"
+                                    placeholder="Your Gemini API key">
+                                <small class="form-help">Your Google Gemini API key (required)</small>
+                            </div>
+
+                            <div class="form-group">
+                                <label>
+                                    <input type="checkbox" id="gemini-enable-json-mode">
+                                    Enable JSON Mode
+                                </label>
+                            </div>
+                        </div>
+
+
+                        <h3 class="mt-lg" data-i18n="settings.basic.lang.title">Language Settings</h3>
+
+                        <div class="grid grid-2">
+                            <div class="form-group">
+                                <label class="form-label" data-i18n="settings.basic.lang.from">Source Language</label>
+                                <select class="form-select" id="lang-from">
+                                    <option value="auto" data-i18n="settings.basic.lang.auto">Auto Detect</option>
+                                    <option value="en">English</option>
+                                    <option value="zh">Chinese</option>
+                                    <option value="ja">Japanese</option>
+                                    <option value="ko">Korean</option>
+                                    <option value="fr">French</option>
+                                    <option value="de">German</option>
+                                    <option value="es">Spanish</option>
+                                    <option value="ru">Russian</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label" data-i18n="settings.basic.lang.to">Target Language</label>
+                                <select class="form-select" id="lang-to">
+                                    <option value="zh">Simplified Chinese</option>
+                                    <option value="en">English</option>
+                                    <option value="ja">Japanese</option>
+                                    <option value="ko">Korean</option>
+                                    <option value="fr">French</option>
+                                    <option value="de">German</option>
+                                    <option value="es">Spanish</option>
+                                    <option value="ru">Russian</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <h3 class="mt-lg" data-i18n="settings.config.title">Configuration Management</h3>
+
+                        <div class="card mb-lg">
+                            <div class="card-body">
+                                <div class="alert alert-warning mb-md">
+                                    <span data-i18n="settings.config.export.warning">⚠️ Warning: The exported file
+                                        contains API keys and sensitive credentials. Store it securely.</span>
+                                </div>
+
+                                <div class="grid grid-2 gap-md">
+                                    <div>
+                                        <h4 data-i18n="settings.config.export.btn">Export Configuration</h4>
+                                        <p class="text-muted" style="font-size: var(--font-size-sm);"
+                                            data-i18n="settings.config.export.desc">Download your translation settings
+                                            as a JSON file</p>
+                                        <button class="btn btn-primary mt-sm" id="export-config-btn">
+                                            <span data-i18n="settings.config.export.btn">Export Configuration</span>
+                                        </button>
+                                    </div>
+
+                                    <div>
+                                        <h4 data-i18n="settings.config.import.btn">Import Configuration</h4>
+                                        <p class="text-muted" style="font-size: var(--font-size-sm);"
+                                            data-i18n="settings.config.import.desc">Upload a configuration file to
+                                            restore settings</p>
+                                        <input type="file" id="import-config-file" accept=".json"
+                                            style="display: none;">
+                                        <button class="btn btn-secondary mt-sm" id="import-config-btn">
+                                            <span data-i18n="settings.config.import.btn">Import Configuration</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <h3 class="mt-lg" data-i18n="settings.basic.pages.title">Page Selection</h3>
+
+                        <div class="form-group">
+                            <label class="form-label" data-i18n="settings.basic.pages.range">Page Range</label>
+                            <select class="form-select" id="page-range">
+                                <option value="all" data-i18n="settings.basic.pages.all">All Pages</option>
+                                <option value="first" data-i18n="settings.basic.pages.first">First Page</option>
+                                <option value="first5" data-i18n="settings.basic.pages.first5">First 5 Pages</option>
+                                <option value="custom" data-i18n="settings.basic.pages.custom">Custom Range</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group" id="custom-pages-group" style="display: none;">
+                            <label class="form-label" data-i18n="settings.basic.pages.custom.label">Custom Pages</label>
+                            <input type="text" class="form-input" id="custom-pages"
+                                data-i18n-placeholder="settings.basic.pages.custom.placeholder"
+                                placeholder="e.g., 1-5,10,15-20">
+                            <small class="form-help" data-i18n="settings.basic.pages.custom.help">Enter page numbers or
+                                ranges separated by commas</small>
+                        </div>
+
+                        <div class="form-group">
+                            <label>
+                                <input type="checkbox" id="ignore-cache">
+                                <span data-i18n="settings.basic.cache">Ignore Cache</span>
+                            </label>
+                            <small class="form-help" data-i18n="settings.basic.cache.help">Force re-translation even if
+                                cached results exist</small>
+                        </div>
+
+                        <button class="btn btn-primary btn-block mt-lg" id="save-basic-btn"
+                            data-i18n="settings.basic.btn.save">Save Basic Settings</button>
+                    </div>
+
+                    <!-- Tab: PDF Output Options -->
+                    <div class="tab-content" id="tab-pdf-output">
+                        <h3 data-i18n="settings.pdf.title">PDF Output Options</h3>
+
+                        <div class="form-group">
+                            <label>
+                                <input type="checkbox" id="no-mono">
+                                <span data-i18n="settings.pdf.no_mono">Skip Mono PDF Output</span>
+                            </label>
+                            <small class="form-help" data-i18n="settings.pdf.no_mono.help">Don't generate
+                                translation-only PDF</small>
+                        </div>
+
+                        <div class="form-group">
+                            <label>
+                                <input type="checkbox" id="no-dual">
+                                <span data-i18n="settings.pdf.no_dual">Skip Dual PDF Output</span>
+                            </label>
+                            <small class="form-help" data-i18n="settings.pdf.no_dual.help">Don't generate bilingual
+                                PDF</small>
+                        </div>
+
+                        <div class="form-group">
+                            <label>
+                                <input type="checkbox" id="dual-translate-first">
+                                <span data-i18n="settings.pdf.dual_first">Translation First in Dual PDF</span>
+                            </label>
+                            <small class="form-help" data-i18n="settings.pdf.dual_first.help">Show translation before
+                                original in dual PDF</small>
+                        </div>
+
+                        <div class="form-group">
+                            <label>
+                                <input type="checkbox" id="use-alternating-pages">
+                                <span data-i18n="settings.pdf.alternating">Use Alternating Pages</span>
+                            </label>
+                            <small class="form-help" data-i18n="settings.pdf.alternating.help">Alternate between
+                                original and translated pages</small>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" data-i18n="settings.pdf.watermark">Watermark Mode</label>
+                            <select class="form-select" id="watermark-mode">
+                                <option value="watermarked" data-i18n="settings.pdf.watermark.yes">Watermarked</option>
+                                <option value="no_watermark" data-i18n="settings.pdf.watermark.no">No Watermark</option>
+                                <option value="both" data-i18n="settings.pdf.watermark.both">Both</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label>
+                                <input type="checkbox" id="only-translated-pages">
+                                <span data-i18n="settings.pdf.only_translated">Only Include Translated Pages</span>
+                            </label>
+                            <small class="form-help" data-i18n="settings.pdf.only_translated.help">Exclude pages that
+                                weren't translated</small>
+                        </div>
+
+                        <button class="btn btn-primary btn-block mt-lg" id="save-pdf-output-btn"
+                            data-i18n="settings.pdf.btn.save">Save PDF Output
+                            Settings</button>
+                    </div>
+
+                    <!-- Tab: Advanced Options -->
+                    <div class="tab-content" id="tab-advanced">
+                        <h3 data-i18n="settings.advanced.title">Advanced Translation Options</h3>
+
+                        <div class="form-group">
+                            <label class="form-label" data-i18n="settings.advanced.system_prompt">Custom System
+                                Prompt</label>
+                            <textarea class="form-textarea" id="custom-system-prompt"
+                                data-i18n-placeholder="settings.advanced.system_prompt.placeholder"
+                                placeholder="e.g., You are a professional translator..."></textarea>
+                            <small class="form-help" data-i18n="settings.advanced.system_prompt.help">Custom
+                                instructions for the translation model</small>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" data-i18n="settings.advanced.min_length">Minimum Text
+                                Length</label>
+                            <input type="number" class="form-input" id="min-text-length" min="0" value="5">
+                            <small class="form-help" data-i18n="settings.advanced.min_length.help">Minimum characters
+                                required to translate a text block</small>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" data-i18n="settings.advanced.font">Primary Font Family</label>
+                            <select class="form-select" id="primary-font">
+                                <option value="auto" data-i18n="settings.advanced.font.auto">Auto</option>
+                                <option value="serif" data-i18n="settings.advanced.font.serif">Serif</option>
+                                <option value="sans-serif" data-i18n="settings.advanced.font.sans">Sans-serif</option>
+                                <option value="script" data-i18n="settings.advanced.font.script">Script</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label>
+                                <input type="checkbox" id="enable-term-extraction">
+                                <span data-i18n="settings.advanced.term_extraction">Enable Auto Term Extraction</span>
+                            </label>
+                            <small class="form-help" data-i18n="settings.advanced.term_extraction.help">Automatically
+                                extract and use domain-specific terms</small>
+                        </div>
+
+                        <div class="form-group">
+                            <label>
+                                <input type="checkbox" id="save-glossary">
+                                <span data-i18n="settings.advanced.save_glossary">Save Auto-Extracted Glossary</span>
+                            </label>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" data-i18n="settings.advanced.rpc_doclayout">RPC DocLayout Service
+                                (Optional)</label>
+                            <input type="text" class="form-input" id="rpc-doclayout"
+                                data-i18n-placeholder="settings.advanced.rpc_doclayout.placeholder"
+                                placeholder="http://host:port">
+                            <small class="form-help" data-i18n="settings.advanced.rpc_doclayout.help">Remote document
+                                layout analysis service</small>
+                        </div>
+
+                        <h3 class="mt-lg" data-i18n="settings.advanced.pdf_title">Advanced PDF Options</h3>
+
+                        <div class="form-group">
+                            <label>
+                                <input type="checkbox" id="skip-clean">
+                                <span data-i18n="settings.advanced.skip_clean">Skip Clean (Improve Compatibility)</span>
+                            </label>
+                        </div>
+
+                        <div class="form-group">
+                            <label>
+                                <input type="checkbox" id="disable-rich-text">
+                                <span data-i18n="settings.advanced.disable_rich_text">Disable Rich Text
+                                    Translation</span>
+                            </label>
+                        </div>
+
+                        <div class="form-group">
+                            <label>
+                                <input type="checkbox" id="enhance-compatibility">
+                                <span data-i18n="settings.advanced.enhance_compat">Enhance Compatibility</span>
+                            </label>
+                            <small class="form-help" data-i18n="settings.advanced.enhance_compat.help">Auto-enables skip
+                                clean and disable rich text</small>
+                        </div>
+
+                        <div class="form-group">
+                            <label>
+                                <input type="checkbox" id="split-short-lines">
+                                <span data-i18n="settings.advanced.split_lines">Force Split Short Lines</span>
+                            </label>
+                        </div>
+
+                        <div class="form-group" id="split-factor-group" style="display: none;">
+                            <label class="form-label" data-i18n="settings.advanced.split_factor">Short Line Split
+                                Factor</label>
+                            <input type="range" class="form-input" id="split-factor" min="0.1" max="1.0" step="0.1"
+                                value="0.5">
+                            <small class="form-help"><span
+                                    data-i18n="settings.advanced.split_factor.label">Threshold</span>: <span
+                                    id="split-factor-value">0.5</span></small>
+                        </div>
+
+                        <div class="form-group">
+                            <label>
+                                <input type="checkbox" id="translate-tables">
+                                <span data-i18n="settings.advanced.translate_tables">Translate Table Text
+                                    (Experimental)</span>
+                            </label>
+                        </div>
+
+                        <div class="form-group">
+                            <label>
+                                <input type="checkbox" id="skip-scanned-detection">
+                                <span data-i18n="settings.advanced.skip_scanned">Skip Scanned Detection</span>
+                            </label>
+                        </div>
+
+                        <div class="form-group">
+                            <label>
+                                <input type="checkbox" id="ocr-workaround">
+                                <span data-i18n="settings.advanced.ocr_workaround">OCR Workaround (Experimental)</span>
+                            </label>
+                        </div>
+
+                        <div class="form-group">
+                            <label>
+                                <input type="checkbox" id="auto-ocr">
+                                <span data-i18n="settings.advanced.auto_ocr">Auto Enable OCR Workaround</span>
+                            </label>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" data-i18n="settings.advanced.max_pages">Max Pages Per Part (0 = no
+                                limit)</label>
+                            <input type="number" class="form-input" id="max-pages-per-part" min="0" value="0">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" data-i18n="settings.advanced.formula_font">Formula Font Pattern
+                                (Regex)</label>
+                            <input type="text" class="form-input" id="formula-font-pattern"
+                                data-i18n-placeholder="settings.advanced.formula_font.placeholder"
+                                placeholder="e.g., CMMI|CMR">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" data-i18n="settings.advanced.formula_char">Formula Char Pattern
+                                (Regex)</label>
+                            <input type="text" class="form-input" id="formula-char-pattern"
+                                data-i18n-placeholder="settings.advanced.formula_char.placeholder"
+                                placeholder="e.g., [∫∬∭∮∯∰∇∆]">
+                        </div>
+
+                        <button class="btn btn-primary btn-block mt-lg" id="save-advanced-btn"
+                            data-i18n="settings.advanced.btn.save">Save Advanced
+                            Settings</button>
+                    </div>
+
+                    <!-- Tab: Rate Limiting -->
+                    <div class="tab-content" id="tab-rate-limit">
+                        <h3 data-i18n="settings.rate.title">Translation Rate Limiting</h3>
+
+                        <div class="form-group">
+                            <label class="form-label" data-i18n="settings.rate.mode">Rate Limit Mode</label>
+                            <select class="form-select" id="rate-limit-mode">
+                                <option value="rpm" data-i18n="settings.rate.mode.rpm">RPM (Requests Per Minute)
+                                </option>
+                                <option value="concurrent" data-i18n="settings.rate.mode.concurrent">Concurrent Threads
+                                </option>
+                                <option value="custom" data-i18n="settings.rate.mode.custom">Custom (QPS + Workers)
+                                </option>
+                            </select>
+                        </div>
+
+                        <div class="form-group" id="rpm-group" style="display: none;">
+                            <label class="form-label" data-i18n="settings.rate.rpm">Requests Per Minute</label>
+                            <input type="number" class="form-input" id="rpm-input" min="1" value="240">
+                        </div>
+
+                        <div class="form-group" id="concurrent-group" style="display: none;">
+                            <label class="form-label" data-i18n="settings.rate.concurrent">Concurrent Threads</label>
+                            <input type="number" class="form-input" id="concurrent-threads" min="1" value="40">
+                        </div>
+
+                        <div id="custom-rate-group" style="display: none;">
+                            <div class="form-group">
+                                <label class="form-label" data-i18n="settings.rate.qps">QPS (Queries Per Second)</label>
+                                <input type="number" class="form-input" id="custom-qps" min="1" value="4">
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label" data-i18n="settings.rate.workers">Pool Max Workers</label>
+                                <input type="number" class="form-input" id="custom-workers" min="1" value="40">
+                            </div>
+                        </div>
+
+                        <h3 class="mt-lg" data-i18n="settings.rate.term.title">Term Extraction Rate Limiting</h3>
+
+                        <div class="form-group">
+                            <label class="form-label" data-i18n="settings.rate.term.service">Term Service</label>
+                            <select class="form-select" id="term-service">
+                                <option value="same" data-i18n="settings.rate.term.service.same">Same as Translation
+                                    Service</option>
+                                <option value="AzureOpenAI">Azure OpenAI</option>
+                                <option value="OpenAI">OpenAI</option>
+                                <option value="GoogleGemini">Google Gemini</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" data-i18n="settings.rate.term.mode">Term Rate Limit Mode</label>
+                            <select class="form-select" id="term-rate-mode">
+                                <option value="rpm">RPM</option>
+                                <option value="concurrent">Concurrent Threads</option>
+                                <option value="custom">Custom</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group" id="term-rpm-group" style="display: none;">
+                            <label class="form-label" data-i18n="settings.rate.term.rpm">Term RPM</label>
+                            <input type="number" class="form-input" id="term-rpm" min="1" value="240">
+                        </div>
+
+                        <div class="form-group" id="term-concurrent-group" style="display: none;">
+                            <label class="form-label" data-i18n="settings.rate.term.concurrent">Term Concurrent
+                                Threads</label>
+                            <input type="number" class="form-input" id="term-concurrent" min="1" value="40">
+                        </div>
+
+                        <div id="term-custom-group" style="display: none;">
+                            <div class="form-group">
+                                <label class="form-label" data-i18n="settings.rate.term.qps">Term QPS</label>
+                                <input type="number" class="form-input" id="term-qps" min="1" value="4">
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label" data-i18n="settings.rate.term.workers">Term Pool
+                                    Workers</label>
+                                <input type="number" class="form-input" id="term-workers" min="1" value="40">
+                            </div>
+                        </div>
+
+                        <button class="btn btn-primary btn-block mt-lg" id="save-rate-limit-btn"
+                            data-i18n="settings.rate.btn.save">Save Rate Limit
+                            Settings</button>
+                    </div>
+
+                    <!-- Tab: BabelDOC Options -->
+                    <div class="tab-content" id="tab-babeldoc">
+                        <h3 data-i18n="settings.babeldoc.title">BabelDOC Advanced Options</h3>
+
+                        <div class="form-group">
+                            <label>
+                                <input type="checkbox" id="merge-line-numbers">
+                                <span data-i18n="settings.babeldoc.merge_lines">Merge Alternating Line Numbers</span>
+                            </label>
+                            <small class="form-help" data-i18n="settings.babeldoc.merge_lines.help">Handle documents
+                                with alternating line numbers</small>
+                        </div>
+
+                        <div class="form-group">
+                            <label>
+                                <input type="checkbox" id="remove-formula-lines">
+                                <span data-i18n="settings.babeldoc.remove_formula">Remove Non-Formula Lines</span>
+                            </label>
+                            <small class="form-help" data-i18n="settings.babeldoc.remove_formula.help">Remove
+                                non-formula lines within paragraph areas</small>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" data-i18n="settings.babeldoc.iou_threshold">Non-Formula Line IoU
+                                Threshold</label>
+                            <input type="range" class="form-input" id="iou-threshold" min="0" max="1" step="0.05"
+                                value="0.5">
+                            <small class="form-help"><span
+                                    data-i18n="settings.babeldoc.iou_threshold.label">Threshold</span>: <span
+                                    id="iou-threshold-value">0.5</span></small>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" data-i18n="settings.babeldoc.protection_threshold">Figure/Table
+                                Protection Threshold</label>
+                            <input type="range" class="form-input" id="protection-threshold" min="0" max="1" step="0.05"
+                                value="0.5">
+                            <small class="form-help"><span
+                                    data-i18n="settings.babeldoc.iou_threshold.label">Threshold</span>: <span
+                                    id="protection-threshold-value">0.5</span></small>
+                        </div>
+
+                        <div class="form-group">
+                            <label>
+                                <input type="checkbox" id="skip-formula-offset">
+                                <span data-i18n="settings.babeldoc.skip_formula_offset">Skip Formula Offset
+                                    Calculation</span>
+                            </label>
+                        </div>
+
+                        <button class="btn btn-primary btn-block mt-lg" id="save-babeldoc-btn"
+                            data-i18n="settings.babeldoc.btn.save">Save BabelDOC
+                            Settings</button>
+                    </div>
+
+                    <!-- Tab: User Management (Admin Only) -->
+                    <div class="tab-content" id="tab-user-mgmt">
+                        <h3 data-i18n="settings.users.title">User Management</h3>
+
+                        <!-- Registration Settings -->
+                        <div class="card mb-lg">
+                            <div class="card-header">
+                                <h4 class="card-title" data-i18n="settings.users.registration.title">Registration
+                                    Settings</h4>
+                            </div>
+                            <div class="card-body">
+                                <div class="form-group">
+                                    <label>
+                                        <input type="checkbox" id="allow-registration">
+                                        <span data-i18n="settings.users.registration.allow">Allow New User
+                                            Registration</span>
+                                    </label>
+                                    <small class="form-help" data-i18n="settings.users.registration.help">When enabled,
+                                        users can register new accounts from the login page</small>
+                                </div>
+
+                                <div id="registration-status" class="alert alert-info mt-md" style="display: none;">
+                                    <span id="registration-status-text"></span>
+                                </div>
+
+                                <button class="btn btn-primary mt-md" id="save-registration-btn"
+                                    data-i18n="settings.users.registration.btn.save">Save Registration
+                                    Settings</button>
+                            </div>
+                        </div>
+
+                        <div class="card mb-lg">
+                            <div class="card-header">
+                                <h4 class="card-title" data-i18n="settings.users.add.title">Add New User</h4>
+                            </div>
+                            <div class="card-body">
+                                <div class="form-group">
+                                    <label class="form-label" data-i18n="settings.users.add.username">Username</label>
+                                    <input type="text" class="form-input" id="new-user-username"
+                                        data-i18n-placeholder="settings.users.add.username.placeholder"
+                                        placeholder="Enter username">
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="form-label" data-i18n="settings.users.add.password">Password</label>
+                                    <input type="password" class="form-input" id="new-user-password"
+                                        data-i18n-placeholder="settings.users.add.password.placeholder"
+                                        placeholder="Enter password">
+                                </div>
+
+                                <button class="btn btn-primary" id="add-user-btn" data-i18n="settings.users.add.btn">Add
+                                    User</button>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-header">
+                                <h4 class="card-title" data-i18n="settings.users.list.title">Existing Users</h4>
+                            </div>
+                            <div class="card-body">
+                                <div id="users-list"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Global Actions -->
+                    <div class="card-footer mt-lg">
+                        <div class="flex flex-between">
+                            <button class="btn btn-secondary" id="reset-btn" data-i18n="settings.global.reset">Reset to
+                                Defaults</button>
+                            <button class="btn btn-success" id="save-all-btn" data-i18n="settings.global.save_all">Save
+                                All Settings</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+
+
+    <script src="/static/js/auth.js"></script>
+    <script src="/static/js/api.js"></script>
+    <script>
+        // Tab switching
+        document.querySelectorAll('.tab-button').forEach(button => {
+            button.addEventListener('click', () => {
+                const tabId = button.dataset.tab;
+
+                // Update buttons
+                document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
+
+                // Update content
+                document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+                document.getElementById(`tab-${tabId}`).classList.add('active');
+            });
+        });
+
+        // Page range selection
+        document.getElementById('page-range').addEventListener('change', (e) => {
+            const customGroup = document.getElementById('custom-pages-group');
+            customGroup.style.display = e.target.value === 'custom' ? 'block' : 'none';
+        });
+
+        // Validation: Prevent both no-mono and no-dual from being checked
+        document.getElementById('no-mono').addEventListener('change', (e) => {
+            const noDualCheckbox = document.getElementById('no-dual');
+            if (e.target.checked && noDualCheckbox.checked) {
+                e.target.checked = false;
+                showAlert('Cannot disable both mono and dual output modes. At least one must be enabled.', 'error');
+            }
+        });
+
+        document.getElementById('no-dual').addEventListener('change', (e) => {
+            const noMonoCheckbox = document.getElementById('no-mono');
+            if (e.target.checked && noMonoCheckbox.checked) {
+                e.target.checked = false;
+                showAlert('Cannot disable both mono and dual output modes. At least one must be enabled.', 'error');
+            }
+        });
+
+        // Split short lines toggle
+        document.getElementById('split-short-lines').addEventListener('change', (e) => {
+            document.getElementById('split-factor-group').style.display = e.target.checked ? 'block' : 'none';
+        });
+
+        // Split factor slider
+        document.getElementById('split-factor').addEventListener('input', (e) => {
+            document.getElementById('split-factor-value').textContent = e.target.value;
+        });
+
+        // IoU threshold slider
+        document.getElementById('iou-threshold').addEventListener('input', (e) => {
+            document.getElementById('iou-threshold-value').textContent = e.target.value;
+        });
+
+        // Protection threshold slider
+        document.getElementById('protection-threshold').addEventListener('input', (e) => {
+            document.getElementById('protection-threshold-value').textContent = e.target.value;
+        });
+
+        // Rate limit mode selection
+        document.getElementById('rate-limit-mode').addEventListener('change', (e) => {
+            const mode = e.target.value;
+            document.getElementById('rpm-group').style.display = mode === 'rpm' ? 'block' : 'none';
+            document.getElementById('concurrent-group').style.display = mode === 'concurrent' ? 'block' : 'none';
+            document.getElementById('custom-rate-group').style.display = mode === 'custom' ? 'block' : 'none';
+        });
+
+        // Term rate limit mode selection
+        document.getElementById('term-rate-mode').addEventListener('change', (e) => {
+            const mode = e.target.value;
+            document.getElementById('term-rpm-group').style.display = mode === 'rpm' ? 'block' : 'none';
+            document.getElementById('term-concurrent-group').style.display = mode === 'concurrent' ? 'block' : 'none';
+            document.getElementById('term-custom-group').style.display = mode === 'custom' ? 'block' : 'none';
+        });
+
+        // Service selection - show/hide service-specific settings
+        document.getElementById('service').addEventListener('change', (e) => {
+            const service = e.target.value;
+
+            // Hide all service-specific settings
+            document.querySelectorAll('.service-settings').forEach(el => {
+                el.style.display = 'none';
+            });
+
+            // Show selected service settings
+            const serviceMap = {
+                'OpenAI': 'openai-settings',
+                'AzureOpenAI': 'azureopenai-settings',
+                'GoogleGemini': 'googlegemini-settings'
+            };
+
+            const settingsId = serviceMap[service];
+            if (settingsId) {
+                document.getElementById(settingsId).style.display = 'block';
+            }
+        });
+
+
+        // Initialize on page load
+        async function init() {
+            try {
+                await requireAuth();
+                const userInfo = await updateUserInfo();
+
+                // Show user management tab for admins (check userInfo exists)
+                if (userInfo && userInfo.is_admin) {
+                    document.getElementById('user-mgmt-tab').style.display = 'block';
+                }
+
+                // Set current username in account settings
+                const usernameInput = document.getElementById('current-username');
+                if (usernameInput && userInfo) {
+                    usernameInput.value = userInfo.username || '';
+                }
+
+                // Load settings
+                await loadSettings();
+
+                // Load users list if admin
+                if (userInfo && userInfo.is_admin) {
+                    await loadUsers();
+                    await loadRegistrationSettings();
+                }
+            } catch (error) {
+                console.error('Initialization error:', error);
+                showError(error);
+            }
+        }
+
+        async function loadSettings() {
+            const response = await api.getSettings();
+            const settings = response.settings || {};
+            console.log('Loaded settings:', settings);
+
+            // Populate all form fields
+            // Basic settings
+            const service = settings.service || 'AzureOpenAI';
+            document.getElementById('service').value = service;
+
+            // Load service-specific settings
+            if (service === 'OpenAI') {
+                document.getElementById('openai-model').value = settings.openai_model || 'gpt-4o-mini';
+                document.getElementById('openai-api-key').value = settings.openai_api_key || '';
+                document.getElementById('openai-base-url').value = settings.openai_base_url || '';
+                document.getElementById('openai-timeout').value = settings.openai_timeout || '';
+                document.getElementById('openai-temperature').value = settings.openai_temperature || '';
+                document.getElementById('openai-send-temperature').checked = settings.openai_send_temprature || false;
+                document.getElementById('openai-reasoning-effort').value = settings.openai_reasoning_effort || '';
+                document.getElementById('openai-send-reasoning-effort').checked = settings.openai_send_reasoning_effort || false;
+                document.getElementById('openai-enable-json-mode').checked = settings.openai_enable_json_mode || false;
+            } else if (service === 'AzureOpenAI') {
+                document.getElementById('azure-openai-model').value = settings.azure_openai_model || 'gpt-4o-mini';
+                document.getElementById('azure-openai-api-key').value = settings.azure_openai_api_key || '';
+                document.getElementById('azure-openai-base-url').value = settings.azure_openai_base_url || '';
+                document.getElementById('azure-openai-api-version').value = settings.azure_openai_api_version || '2024-06-01';
+            } else if (service === 'GoogleGemini') {
+                document.getElementById('gemini-model').value = settings.gemini_model || 'gemini-1.5-flash';
+                document.getElementById('gemini-api-key').value = settings.gemini_api_key || '';
+                document.getElementById('gemini-enable-json-mode').checked = settings.gemini_enable_json_mode || false;
+            }
+
+            document.getElementById('lang-from').value = settings.lang_from || 'auto';
+            document.getElementById('lang-to').value = settings.lang_to || 'zh';
+            document.getElementById('page-range').value = settings.page_range || 'all';
+            document.getElementById('ignore-cache').checked = settings.ignore_cache || false;
+
+            // PDF output
+            document.getElementById('no-mono').checked = settings.no_mono || false;
+            document.getElementById('no-dual').checked = settings.no_dual || false;
+            document.getElementById('dual-translate-first').checked = settings.dual_translate_first || false;
+            document.getElementById('use-alternating-pages').checked = settings.use_alternating_pages || false;
+            document.getElementById('watermark-mode').value = settings.watermark_mode || 'watermarked';
+            document.getElementById('only-translated-pages').checked = settings.only_translated_pages || false;
+
+            // Advanced
+            document.getElementById('custom-system-prompt').value = settings.custom_system_prompt || '';
+            document.getElementById('min-text-length').value = settings.min_text_length || 5;
+            document.getElementById('primary-font').value = settings.primary_font || 'auto';
+            document.getElementById('enable-term-extraction').checked = settings.enable_term_extraction || false;
+            document.getElementById('save-glossary').checked = settings.save_glossary || false;
+            document.getElementById('rpc-doclayout').value = settings.rpc_doclayout || '';
+
+            // Advanced PDF
+            document.getElementById('skip-clean').checked = settings.skip_clean || false;
+            document.getElementById('disable-rich-text').checked = settings.disable_rich_text || false;
+            document.getElementById('enhance-compatibility').checked = settings.enhance_compatibility || false;
+            document.getElementById('split-short-lines').checked = settings.split_short_lines || false;
+            document.getElementById('split-factor').value = settings.split_factor || 0.5;
+            document.getElementById('translate-tables').checked = settings.translate_tables || false;
+            document.getElementById('skip-scanned-detection').checked = settings.skip_scanned_detection || false;
+            document.getElementById('ocr-workaround').checked = settings.ocr_workaround || false;
+            document.getElementById('auto-ocr').checked = settings.auto_ocr || false;
+            document.getElementById('max-pages-per-part').value = settings.max_pages_per_part || 0;
+            document.getElementById('formula-font-pattern').value = settings.formula_font_pattern || '';
+            document.getElementById('formula-char-pattern').value = settings.formula_char_pattern || '';
+
+            // Rate limiting
+            document.getElementById('rate-limit-mode').value = settings.rate_limit_mode || 'rpm';
+            document.getElementById('rpm-input').value = settings.rpm || 240;
+            document.getElementById('concurrent-threads').value = settings.concurrent_threads || 40;
+            document.getElementById('custom-qps').value = settings.custom_qps || 4;
+            document.getElementById('custom-workers').value = settings.custom_workers || 40;
+
+            // Term extraction
+            document.getElementById('term-service').value = settings.term_service || 'same';
+            document.getElementById('term-rate-mode').value = settings.term_rate_mode || 'rpm';
+            document.getElementById('term-rpm').value = settings.term_rpm || 240;
+            document.getElementById('term-concurrent').value = settings.term_concurrent || 40;
+            document.getElementById('term-qps').value = settings.term_qps || 4;
+            document.getElementById('term-workers').value = settings.term_workers || 40;
+
+            // BabelDOC
+            document.getElementById('merge-line-numbers').checked = settings.merge_line_numbers !== false;
+            document.getElementById('remove-formula-lines').checked = settings.remove_formula_lines !== false;
+            document.getElementById('iou-threshold').value = settings.iou_threshold || 0.5;
+            document.getElementById('protection-threshold').value = settings.protection_threshold || 0.5;
+            document.getElementById('skip-formula-offset').checked = settings.skip_formula_offset || false;
+
+            // Trigger change events to show/hide conditional fields
+            document.getElementById('service').dispatchEvent(new Event('change'));
+            document.getElementById('page-range').dispatchEvent(new Event('change'));
+            document.getElementById('split-short-lines').dispatchEvent(new Event('change'));
+            document.getElementById('rate-limit-mode').dispatchEvent(new Event('change'));
+            document.getElementById('term-rate-mode').dispatchEvent(new Event('change'));
+        }
+
+        async function saveAllSettings() {
+            try {
+                const service = document.getElementById('service').value;
+                const settings = {
+                    // Basic
+                    service: service,
+                    lang_from: document.getElementById('lang-from').value,
+                    lang_to: document.getElementById('lang-to').value,
+                    page_range: document.getElementById('page-range').value,
+                    custom_pages: document.getElementById('custom-pages').value,
+                    ignore_cache: document.getElementById('ignore-cache').checked,
+
+                    // Service-specific settings
+                    ...(service === 'OpenAI' && {
+                        openai_model: document.getElementById('openai-model').value,
+                        openai_api_key: document.getElementById('openai-api-key').value,
+                        openai_base_url: document.getElementById('openai-base-url').value || null,
+                        openai_timeout: document.getElementById('openai-timeout').value || null,
+                        openai_temperature: document.getElementById('openai-temperature').value || null,
+                        openai_send_temprature: document.getElementById('openai-send-temperature').checked,
+                        openai_reasoning_effort: document.getElementById('openai-reasoning-effort').value || null,
+                        openai_send_reasoning_effort: document.getElementById('openai-send-reasoning-effort').checked,
+                        openai_enable_json_mode: document.getElementById('openai-enable-json-mode').checked
+                    }),
+                    ...(service === 'AzureOpenAI' && {
+                        azure_openai_model: document.getElementById('azure-openai-model').value,
+                        azure_openai_api_key: document.getElementById('azure-openai-api-key').value,
+                        azure_openai_base_url: document.getElementById('azure-openai-base-url').value,
+                        azure_openai_api_version: document.getElementById('azure-openai-api-version').value
+                    }),
+                    ...(service === 'GoogleGemini' && {
+                        gemini_model: document.getElementById('gemini-model').value,
+                        gemini_api_key: document.getElementById('gemini-api-key').value,
+                        gemini_enable_json_mode: document.getElementById('gemini-enable-json-mode').checked
+                    }),
+
+                    // PDF output
+                    no_mono: document.getElementById('no-mono').checked,
+                    no_dual: document.getElementById('no-dual').checked,
+                    dual_translate_first: document.getElementById('dual-translate-first').checked,
+                    use_alternating_pages: document.getElementById('use-alternating-pages').checked,
+                    watermark_mode: document.getElementById('watermark-mode').value,
+                    only_translated_pages: document.getElementById('only-translated-pages').checked,
+
+                    // Advanced
+                    custom_system_prompt: document.getElementById('custom-system-prompt').value,
+                    min_text_length: parseInt(document.getElementById('min-text-length').value),
+                    primary_font: document.getElementById('primary-font').value,
+                    enable_term_extraction: document.getElementById('enable-term-extraction').checked,
+                    save_glossary: document.getElementById('save-glossary').checked,
+                    rpc_doclayout: document.getElementById('rpc-doclayout').value,
+
+                    // Advanced PDF
+                    skip_clean: document.getElementById('skip-clean').checked,
+                    disable_rich_text: document.getElementById('disable-rich-text').checked,
+                    enhance_compatibility: document.getElementById('enhance-compatibility').checked,
+                    split_short_lines: document.getElementById('split-short-lines').checked,
+                    split_factor: parseFloat(document.getElementById('split-factor').value),
+                    translate_tables: document.getElementById('translate-tables').checked,
+                    skip_scanned_detection: document.getElementById('skip-scanned-detection').checked,
+                    ocr_workaround: document.getElementById('ocr-workaround').checked,
+                    auto_ocr: document.getElementById('auto-ocr').checked,
+                    max_pages_per_part: parseInt(document.getElementById('max-pages-per-part').value),
+                    formula_font_pattern: document.getElementById('formula-font-pattern').value,
+                    formula_char_pattern: document.getElementById('formula-char-pattern').value,
+
+                    // Rate limiting
+                    rate_limit_mode: document.getElementById('rate-limit-mode').value,
+                    rpm: parseInt(document.getElementById('rpm-input').value),
+                    concurrent_threads: parseInt(document.getElementById('concurrent-threads').value),
+                    custom_qps: parseInt(document.getElementById('custom-qps').value),
+                    custom_workers: parseInt(document.getElementById('custom-workers').value),
+
+                    // Term extraction
+                    term_service: document.getElementById('term-service').value,
+                    term_rate_mode: document.getElementById('term-rate-mode').value,
+                    term_rpm: parseInt(document.getElementById('term-rpm').value),
+                    term_concurrent: parseInt(document.getElementById('term-concurrent').value),
+                    term_qps: parseInt(document.getElementById('term-qps').value),
+                    term_workers: parseInt(document.getElementById('term-workers').value),
+
+                    // BabelDOC
+                    merge_line_numbers: document.getElementById('merge-line-numbers').checked,
+                    remove_formula_lines: document.getElementById('remove-formula-lines').checked,
+                    iou_threshold: parseFloat(document.getElementById('iou-threshold').value),
+                    protection_threshold: parseFloat(document.getElementById('protection-threshold').value),
+                    skip_formula_offset: document.getElementById('skip-formula-offset').checked,
+                };
+
+                await api.updateSettings(settings);
+                showSuccess('Settings saved successfully!');
+            } catch (error) {
+                showError(error);
+            }
+        }
+
+        // Event listeners for save buttons
+        document.getElementById('save-basic-btn').addEventListener('click', saveAllSettings);
+        document.getElementById('save-pdf-output-btn').addEventListener('click', saveAllSettings);
+        document.getElementById('save-advanced-btn').addEventListener('click', saveAllSettings);
+        document.getElementById('save-rate-limit-btn').addEventListener('click', saveAllSettings);
+        document.getElementById('save-babeldoc-btn').addEventListener('click', saveAllSettings);
+        document.getElementById('save-all-btn').addEventListener('click', saveAllSettings);
+
+        // Change password
+        document.getElementById('change-password-btn').addEventListener('click', async () => {
+            const currentPassword = document.getElementById('current-password').value;
+            const newPassword = document.getElementById('new-password').value;
+            const confirmPassword = document.getElementById('confirm-password').value;
+
+            if (!currentPassword || !newPassword || !confirmPassword) {
+                showAlert('Please fill in all password fields', 'error');
+                return;
+            }
+
+            if (newPassword !== confirmPassword) {
+                showAlert('New passwords do not match', 'error');
+                return;
+            }
+
+            if (newPassword.length < 6) {
+                showAlert('Password must be at least 6 characters', 'error');
+                return;
+            }
+
+            try {
+                await api.changePassword(currentPassword, newPassword);
+                showSuccess('Password changed successfully!');
+                document.getElementById('current-password').value = '';
+                document.getElementById('new-password').value = '';
+                document.getElementById('confirm-password').value = '';
+            } catch (error) {
+                showError(error);
+            }
+        });
+
+        // User management functions
+        async function loadUsers() {
+            try {
+                const response = await api.listUsers();
+                const users = response.users || [];
+                const usersList = document.getElementById('users-list');
+
+                usersList.innerHTML = users.map(user => `
+                    <div class="flex flex-between mb-sm" style="padding: 1rem; background: var(--bg-card-hover); border-radius: var(--radius-md);">
+                        <div>
+                            <strong>${user.username}</strong>
+                            ${user.is_admin ? '<span class="badge">Admin</span>' : ''}
+                            <br>
+                            <small style="color: var(--text-muted);">Created: ${formatDate(user.created_at)}</small>
+                        </div>
+                        ${!user.is_admin ? `<button class="btn btn-danger btn-sm" onclick="deleteUser('${user.username}')">Delete</button>` : ''}
+                    </div>
+                `).join('');
+            } catch (error) {
+                showError(error);
+            }
+        }
+
+        // Load registration settings
+        async function loadRegistrationSettings() {
+            try {
+                const response = await api.checkRegistrationStatus();
+                const checkbox = document.getElementById('allow-registration');
+                const statusDiv = document.getElementById('registration-status');
+                const statusText = document.getElementById('registration-status-text');
+
+                checkbox.checked = response.enabled;
+
+                // Show status
+                statusDiv.style.display = 'block';
+                if (response.enabled) {
+                    statusDiv.className = 'alert alert-success mt-md';
+                    statusText.textContent = i18n.t('settings.users.registration.enabled');
+                } else {
+                    statusDiv.className = 'alert alert-info mt-md';
+                    statusText.textContent = i18n.t('settings.users.registration.disabled');
+                }
+            } catch (error) {
+                console.error('Failed to load registration settings:', error);
+            }
+        }
+
+        // Save registration settings
+        document.getElementById('save-registration-btn').addEventListener('click', async () => {
+            const enabled = document.getElementById('allow-registration').checked;
+
+            try {
+                showLoading('Saving registration settings...');
+                await api.toggleRegistration(enabled);
+                hideLoading();
+                showSuccess('Registration settings saved successfully!');
+
+                // Update status display
+                await loadRegistrationSettings();
+            } catch (error) {
+                hideLoading();
+                showError(error);
+            }
+        });
+
+        // Configuration Export/Import
+        document.getElementById('export-config-btn').addEventListener('click', async () => {
+            try {
+                showLoading(i18n.t('common.loading'));
+                await api.exportSettings();
+                hideLoading();
+                showSuccess(i18n.t('settings.config.export.success'));
+            } catch (error) {
+                hideLoading();
+                showError(error);
+            }
+        });
+
+        document.getElementById('import-config-btn').addEventListener('click', () => {
+            document.getElementById('import-config-file').click();
+        });
+
+        document.getElementById('import-config-file').addEventListener('change', async (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            try {
+                showLoading(i18n.t('common.loading'));
+                const result = await api.importSettings(file);
+                hideLoading();
+
+                if (result.success) {
+                    showSuccess(`${i18n.t('settings.config.import.success')} (${result.imported_count} settings)`);
+                    // Reload settings to show imported values
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 1500);
+                }
+            } catch (error) {
+                hideLoading();
+                showError(i18n.t('settings.config.import.error') + ': ' + error.message);
+            } finally {
+                // Reset file input
+                e.target.value = '';
+            }
+        });
+
+        document.getElementById('add-user-btn').addEventListener('click', async () => {
+            const username = document.getElementById('new-user-username').value;
+            const password = document.getElementById('new-user-password').value;
+
+            if (!username || !password) {
+                showAlert('Please enter username and password', 'error');
+                return;
+            }
+
+            try {
+                await api.register(username, password);
+                showSuccess('User added successfully!');
+                document.getElementById('new-user-username').value = '';
+                document.getElementById('new-user-password').value = '';
+                await loadUsers();
+            } catch (error) {
+                showError(error);
+            }
+        });
+
+        async function deleteUser(username) {
+            if (!confirm(`Are you sure you want to delete user "${username}"?`)) {
+                return;
+            }
+
+            try {
+                await api.deleteUser(username);
+                showSuccess('User deleted successfully!');
+                await loadUsers();
+            } catch (error) {
+                showError(error);
+            }
+        }
+
+        // Reset to defaults
+        document.getElementById('reset-btn').addEventListener('click', async () => {
+            if (!confirm('Are you sure you want to reset all settings to defaults?')) {
+                return;
+            }
+
+            try {
+                await api.resetSettings();
+                showSuccess('Settings reset to defaults!');
+                await loadSettings();
+            } catch (error) {
+                showError(error);
+            }
+        });
+
+        // Initialize
+        init();
+    </script>
+</body>
+
+</html>
