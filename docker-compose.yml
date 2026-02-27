@@ -1,0 +1,22 @@
+services:
+  pdf2zh-web:
+    image: ghcr.io/neokotora/pdf2zh-web:latest
+    container_name: pdf2zh-web
+    restart: unless-stopped
+    ports:
+      - "${PORT:-7860}:7860"
+    volumes:
+      - pdf2zh-data:/app/data
+    environment:
+      - TZ=${TZ:-Asia/Shanghai}
+      - MAX_CONCURRENT_TRANSLATIONS=${MAX_CONCURRENT_TRANSLATIONS:-2}
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:7860/health"]
+      interval: 30s
+      timeout: 5s
+      start_period: 15s
+      retries: 3
+
+volumes:
+  pdf2zh-data:
+    driver: local
