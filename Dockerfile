@@ -5,7 +5,8 @@ WORKDIR /build
 
 COPY requirements.txt .
 RUN pip install --no-cache-dir --prefix=/install -r requirements.txt && \
-    pip install --no-cache-dir --prefix=/install opencv-python-headless
+    pip install --no-cache-dir --prefix=/install --force-reinstall \
+        "opencv-python-headless>=4.0"
 
 # ---- Stage 2: Runtime ----
 FROM python:3.12-slim
