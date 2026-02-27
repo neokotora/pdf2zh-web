@@ -4,7 +4,8 @@ FROM python:3.12-slim AS builder
 WORKDIR /build
 
 COPY requirements.txt .
-RUN pip install --no-cache-dir --prefix=/install -r requirements.txt
+RUN pip install --no-cache-dir --prefix=/install -r requirements.txt && \
+    pip install --no-cache-dir --prefix=/install opencv-python-headless
 
 # ---- Stage 2: Runtime ----
 FROM python:3.12-slim
