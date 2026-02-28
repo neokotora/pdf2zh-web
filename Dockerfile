@@ -17,7 +17,14 @@ LABEL org.opencontainers.image.licenses="AGPL-3.0"
 
 # Install runtime system deps (if any native libs needed)
 RUN apt-get update && \
-    apt-get install -y --no-install-recommends curl && \
+    apt-get install -y --no-install-recommends \
+        curl \
+        libxcb1 \
+        libxext6 \
+        libsm6 \
+        libxrender1 \
+        libgl1 \
+        libglib2.0-0 && \
     rm -rf /var/lib/apt/lists/*
 
 # Copy installed Python packages from builder
