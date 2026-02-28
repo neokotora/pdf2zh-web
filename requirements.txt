@@ -8,6 +8,7 @@ openai
 peewee
 pydantic
 PyJWT
+python-multipart
 requests
 rich
 sse-starlette
