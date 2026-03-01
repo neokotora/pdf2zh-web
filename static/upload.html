@@ -409,7 +409,11 @@
             if (btn) {
                 originalHTML = btn.innerHTML;
                 btn.disabled = true;
-                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> <span>Downloading...</span>';
+                if (btn.classList.contains('btn-icon')) {
+                    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+                } else {
+                    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> <span>Downloading...</span>';
+                }
             }
 
             try {
